@@ -1,0 +1,13 @@
+batch_size: 256
+bn: false
+cpu: false
+device: 0
+dropout: false
+dropout_rate: 0.5
+epochs: 64
+exp_no: 0
+loss_fn: x_entropy
+lr: 0.001
+model: fcn
+note: null
+optim: adam

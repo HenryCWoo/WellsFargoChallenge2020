@@ -1,5 +1,8 @@
-# Models
-models/
+# Saved Neural Net Models (Not the implementation)
+./models/
+
+# Data
+./data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
