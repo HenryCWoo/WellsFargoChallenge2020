@@ -39,9 +39,10 @@ class TrainModel:
         self.device = self._init_device(
             cpu=args['cpu'], device=args['device'])
         self.exp_no = args['exp_no']
-        self.info_yml = os.path.join(MODEL_DIR, str(self.exp_no), 'info.yml')
+        self.info_yml = os.path.join(
+            EXPERIMENTS_DIR, str(self.exp_no), 'info.yml')
         self.model_path = os.path.join(
-            MODEL_DIR, str(self.exp_no), 'model.sav')
+            EXPERIMENTS_DIR, str(self.exp_no), 'model.sav')
 
         # Model
         self.model = self._init_model()
@@ -85,7 +86,11 @@ class TrainModel:
         ''' Loss function  '''
         criterion_type = self.args['loss_fn']
         # return nn.CosineEmbeddingLoss()
-        return nn.BCEWithLogitsLoss()
+        if criterion_type == 'bce':
+            return nn.BCEWithLogitsLoss()
+        else:
+            raise NotImplementedError(
+                f'Loss function: {criterion_type} not found.')
 
     def _init_device(self, cpu=False, device=0):
         ''' Initialize device. Device can be CPU or integer specifiying a GPU. '''

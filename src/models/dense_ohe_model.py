@@ -44,6 +44,7 @@ class DenseOHE(nn.Module):
 
         x = self.layer_x(x)
         xc = self.layer_xc(xc_ohe)
+        xc = xc.squeeze()
 
         x = torch.cat((x, xc), dim=1)
         x = self.layer_1(x)
