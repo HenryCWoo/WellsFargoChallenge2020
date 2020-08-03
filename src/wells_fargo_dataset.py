@@ -1,10 +1,15 @@
 import numpy as np
 import pandas as pd
+from pandas.api.types import CategoricalDtype
 
 import torch
 import torchvision.transforms as transforms
 from torch.utils.data import Dataset
 
+from sklearn.preprocessing import LabelEncoder
+
+
+XC_CAT_COUNT = 5  # Category count: A, B, C, D, E
 TARGET_COL = 'y'
 CHAR_COL = 'XC'
 
@@ -16,9 +21,12 @@ class WellsFargoDataset(Dataset):
         # Assume target / label column is labelled 'y'
         self.targets = data_df[TARGET_COL].to_numpy()
 
-        # Extract feature column containing chars
-        # User may want to use embeddings or one-hot encoding, etc.
-        self.chars = data_df[CHAR_COL].to_numpy()
+        # Extract feature column containing chars as integers
+        # ie. A: 0, B: 1, C: 2, etc...
+        # Models may want to use embeddings or one-hot encoding, etc.
+        cat_type = CategoricalDtype(
+            categories=['A', 'B', 'C', 'D', 'E'], ordered=True)
+        self.chars = data_df[CHAR_COL].astype(cat_type).cat.codes.to_numpy()
 
         # Remove label column and get features (excluding the char column)
         feat_df = data_df.drop([TARGET_COL, CHAR_COL], axis=1)
@@ -29,7 +37,8 @@ class WellsFargoDataset(Dataset):
 
     def __getitem__(self, idx):
         feat_vec, char, target = self.feat_vecs[idx], self.chars[idx], self.targets[idx]
-        feat_vec, target = torch.Tensor(feat_vec), torch.Tensor([target])
+        feat_vec, char, target = torch.Tensor(
+            feat_vec), torch.Tensor([char]), torch.Tensor([target])
 
         if self.transform is not None:
             feat_vec = self.transform(feat_vec)

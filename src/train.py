@@ -1,18 +1,20 @@
+from constants import *
+
 import os
 import argparse
 import yaml
 
 from train_model import TrainModel
 
-MODEL_DIR = '../models'
-
 parser = argparse.ArgumentParser()
 
 # Model
-parser.add_argument('--model', type=str, default='fcn', choices=['fcn'],
+parser.add_argument('--model', type=str, default='dense_embed', choices=['dense_no_xc', 'dense_ohe', 'dense_embed', 'conv1d_embed'],
                     help='Classifier model.')
 
 # Hyperparameters
+parser.add_argument('--kfold', type=int, default=5,
+                    help='Number of folds for k-Fold cross validation.')
 parser.add_argument('--epochs', type=int, default=64,
                     help='Number of total epochs in classifier training.')
 parser.add_argument('--lr', type=float, default=1e-3,
@@ -28,6 +30,12 @@ parser.add_argument('--dropout_rate', type=float, default=0.5,
                     help='Dropout rate for the layers.')
 parser.add_argument('--loss_fn', type=str, default='x_entropy', choices=['x_entropy'],
                     help='Loss function used for training.')
+parser.add_argument('--scheduler', action='store_true',
+                    default=False, help='Use learning rate scheduler.')
+parser.add_argument('--step_size', type=int, default=32,
+                    help='(--scheduler flag must be set) Interval of epochs until learning rate change.')
+parser.add_argument('--gamma', type=float, default=0.1,
+                    help='(--scheduleer flag must be set) Change in learning rate factor.')
 
 # Others
 parser.add_argument('--exp_no', type=int, default=-1,
@@ -70,6 +78,10 @@ def increm_experiment_dir():
 def init_exp_dir():
     ''' Create or load an experiment '''
     # Create new experiment if exp number was not specified
+    # Create root save model directory if it doesn't exist
+    if not os.path.exists(MODEL_DIR):
+        os.mkdir(MODEL_DIR)
+
     if args.exp_no == -1:
         increm_experiment_dir()
 
