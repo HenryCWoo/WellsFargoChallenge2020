@@ -2,7 +2,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-from wells_fargo_dataset import XC_CAT_COUNT
+from wells_fargo_dataset import XC_COUNT
 
 
 class DenseOHE(nn.Module):
@@ -38,13 +38,13 @@ class DenseOHE(nn.Module):
         return nn.Sequential(*modules)
 
     def forward(self, x, xc):
+        xc = xc.squeeze()
         xc = xc.long()  # F.one_hot requires long type
         xc_ohe = F.one_hot(
-            xc, num_classes=XC_CAT_COUNT).to(self.device, dtype=torch.float32)
+            xc, num_classes=XC_COUNT).to(self.device, dtype=torch.float32)
 
         x = self.layer_x(x)
         xc = self.layer_xc(xc_ohe)
-        xc = xc.squeeze()
 
         x = torch.cat((x, xc), dim=1)
         x = self.layer_1(x)

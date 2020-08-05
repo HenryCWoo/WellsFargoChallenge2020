@@ -6,7 +6,7 @@ from torch.utils.data.sampler import SubsetRandomSampler
 from sklearn.metrics import classification_report
 
 
-def kfold_cross_dataset(dataset, batch_size, k=5, shuffle_dataset=True):
+def kfold_dataset_generator(dataset, batch_size, k=5, shuffle_dataset=True):
     # Creating data indices for training and validation splits:
     dataset_size = len(dataset)
     indices = list(range(dataset_size))
@@ -14,7 +14,7 @@ def kfold_cross_dataset(dataset, batch_size, k=5, shuffle_dataset=True):
     if shuffle_dataset:
         np.random.shuffle(indices)
     for fold_no in range(k):
-        train_indices = indices[max((fold_no - 1) * split, 0): fold_no * split] + \
+        train_indices = indices[: fold_no * split] + \
             indices[min((fold_no + 1) * split, dataset_size):]
         test_indices = indices[fold_no * split:
                                min((fold_no + 1) * split, dataset_size)]

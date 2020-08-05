@@ -2,13 +2,13 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-from wells_fargo_dataset import XC_CAT_COUNT
+from wells_fargo_dataset import XC_COUNT
 
 EMBED_VEC_SIZE = 16
 
 
 class Conv1DEmbed(nn.Module):
-    ''' This model encodes the 'XC' column as a one hot encoding '''
+    ''' This model encodes the 'XC' column as an embedding '''
 
     def __init__(self, device, bn=True, dropout=True, dropout_rate=0.5):
         super(Conv1DEmbed, self).__init__()
@@ -17,7 +17,7 @@ class Conv1DEmbed(nn.Module):
         self.dropout_rate = dropout_rate
         self.bn = bn
 
-        self.embed_xc = nn.Embedding(XC_CAT_COUNT, EMBED_VEC_SIZE)
+        self.embed_xc = nn.Embedding(XC_COUNT, EMBED_VEC_SIZE)
         self.layer_xc = self._embedding_layer(32)
 
         self.layer_x = self._conv_block(1, 32)

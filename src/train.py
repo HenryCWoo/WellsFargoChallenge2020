@@ -5,11 +5,14 @@ import argparse
 import yaml
 
 from train_model import TrainModel
+from xgboost_trainer import XGBoostTrainer
 
 parser = argparse.ArgumentParser()
 
 # Model
-parser.add_argument('--model', type=str, default='dense_embed', choices=['dense_no_xc', 'dense_ohe', 'dense_embed', 'conv1d_embed'],
+parser.add_argument('--model', type=str, default='dense_embed',
+                    choices=['dense_no_xc', 'dense_ohe',
+                             'dense_embed', 'conv1d_embed', 'xgboost'],
                     help='Classifier model.')
 
 # Hyperparameters
@@ -94,6 +97,10 @@ def init_exp_dir():
 
 
 if __name__ == '__main__':
-    init_exp_dir()
-    model = TrainModel(**vars(args))
-    model.train()
+    # init_exp_dir()
+    if args.model == 'xgboost':
+        model = XGBoostTrainer(**vars(args))
+        model.train()
+    else:
+        model = TrainModel(**vars(args))
+        model.train()

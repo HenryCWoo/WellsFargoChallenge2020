@@ -60,7 +60,7 @@ class TrainModel:
         self.dataset = WellsFargoDataset(self.data_df)
         self.complete_trainloader = torch.utils.data.DataLoader(
             self.dataset, batch_size=args['batch_size'], shuffle=True)  # Train loader that contains all training data
-        self.kfold_generator = kfold_cross_dataset(
+        self.kfold_generator = kfold_dataset_generator(
             self.dataset, self.batch_size, k=args['kfold'])  # Generates train and validation loaders for k-fold validation
 
     def _init_model(self):

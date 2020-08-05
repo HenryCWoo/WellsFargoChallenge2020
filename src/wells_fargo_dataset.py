@@ -9,7 +9,7 @@ from torch.utils.data import Dataset
 from sklearn.preprocessing import LabelEncoder
 
 
-XC_CAT_COUNT = 5  # Category count: A, B, C, D, E
+XC_COUNT = 5  # Category count: A, B, C, D, E
 TARGET_COL = 'y'
 CHAR_COL = 'XC'
 
