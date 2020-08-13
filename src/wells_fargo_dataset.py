@@ -11,15 +11,21 @@ from sklearn.preprocessing import LabelEncoder
 
 XC_COUNT = 5  # Category count: A, B, C, D, E
 TARGET_COL = 'y'
+SCENARIO_COL = 'scenario'
 CHAR_COL = 'XC'
 
 
 class WellsFargoDataset(Dataset):
-    def __init__(self, data_df, transform=None):
+    def __init__(self, data_df, transform=None, train=True):
+        self.train_flag = train
         self.transform = transform
 
         # Assume target / label column is labelled 'y'
-        self.targets = data_df[TARGET_COL].to_numpy()
+        if self.train_flag:
+            self.targets = data_df[TARGET_COL].to_numpy()
+        else:
+            # Scenario number replaces label when using test data
+            self.targets = data_df[SCENARIO_COL].to_numpy()
 
         # Extract feature column containing chars as integers
         # ie. A: 0, B: 1, C: 2, etc...
@@ -29,7 +35,10 @@ class WellsFargoDataset(Dataset):
         self.chars = data_df[CHAR_COL].astype(cat_type).cat.codes.to_numpy()
 
         # Remove label column and get features (excluding the char column)
-        feat_df = data_df.drop([TARGET_COL, CHAR_COL], axis=1)
+        if self.train_flag:
+            feat_df = data_df.drop([TARGET_COL, CHAR_COL], axis=1)
+        else:
+            feat_df = data_df.drop([SCENARIO_COL, CHAR_COL], axis=1)
         self.feat_vecs = feat_df.to_numpy()
 
     def __len__(self):
@@ -37,8 +46,8 @@ class WellsFargoDataset(Dataset):
 
     def __getitem__(self, idx):
         feat_vec, char, target = self.feat_vecs[idx], self.chars[idx], self.targets[idx]
-        feat_vec, char, target = torch.Tensor(
-            feat_vec), torch.Tensor([char]), torch.Tensor([target])
+        feat_vec, char, target = torch.Tensor(feat_vec), torch.Tensor(
+            [char]), torch.Tensor([target])
 
         if self.transform is not None:
             feat_vec = self.transform(feat_vec)

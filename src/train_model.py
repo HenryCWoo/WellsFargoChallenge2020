@@ -67,17 +67,28 @@ class TrainModel:
         model_type = self.args['model']
         device = self.args['device']
         bn = self.args['bn']
+
         dropout = self.args['dropout']
         dropout_rate = self.args['dropout_rate']
 
+        hidden_layers = self.args['hidden_layers']
+        hidden_units = self.args['hidden_units']
+
+        conv_blocks = self.args['conv_blocks']
+        kernel_size = self.args['kernel_size']
+        filters = self.args['filters']
+
         if model_type == 'dense_no_xc':
-            return DenseNoXC(device, bn=bn, dropout=dropout, dropout_rate=dropout_rate)
+            return DenseNoXC(device, bn=bn, dropout=dropout, dropout_rate=dropout_rate, hidden_layers=hidden_layers, hidden_units=hidden_units)
         elif model_type == 'dense_ohe':
-            return DenseOHE(device, bn=bn, dropout=dropout, dropout_rate=dropout_rate)
+            return DenseOHE(device, bn=bn, dropout=dropout, dropout_rate=dropout_rate, hidden_layers=hidden_layers, hidden_units=hidden_units)
         elif model_type == 'dense_embed':
-            return DenseEmbed(device, bn=bn, dropout=dropout, dropout_rate=dropout_rate)
+            return DenseEmbed(device, bn=bn, dropout=dropout, dropout_rate=dropout_rate, hidden_layers=hidden_layers, hidden_units=hidden_units)
         elif model_type == 'conv1d_embed':
-            return Conv1DEmbed(device, bn=bn, dropout=dropout, dropout_rate=dropout_rate)
+            return Conv1DEmbed(
+                device, bn=bn, dropout=dropout, dropout_rate=dropout_rate, hidden_layers=hidden_layers, hidden_units=hidden_units,
+                conv_blocks=conv_blocks, kernel_size=kernel_size, filters=filters
+            )
         else:
             raise NotImplementedError(
                 f'Model type: {model_type} not found. Refer to src.models for models.')
@@ -85,7 +96,6 @@ class TrainModel:
     def _init_criterion(self):
         ''' Loss function  '''
         criterion_type = self.args['loss_fn']
-        # return nn.CosineEmbeddingLoss()
         if criterion_type == 'bce':
             return nn.BCEWithLogitsLoss()
         else:
@@ -245,7 +255,8 @@ class TrainModel:
                 self.scheduler.step()
 
         # Save Final Model
-        torch.save({'model_state_dict': self.model.state_dict()},
-                   self.model_path)
-        print(
-            f"AVERAGE WEIGHTED F-1 SCORE: {avg_cls_report['weighted avg']['f1-score']}")
+        if not self.args['no_save']:
+            torch.save({'model_state_dict': self.model.state_dict()},
+                       self.model_path)
+            print(
+                f"AVERAGE WEIGHTED F-1 SCORE: {avg_cls_report['weighted avg']['f1-score']}")
