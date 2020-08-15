@@ -1,3 +1,9 @@
+from models.conv1d_embed_model import Conv1DEmbed
+from models.dense_embed_model import DenseEmbed
+from models.dense_ohe_model import DenseOHE
+from models.dense_no_xc_model import DenseNoXC
+from wells_fargo_dataset import WellsFargoDataset
+from utils import *
 from constants import *
 
 import os
@@ -12,13 +18,6 @@ import torch.optim as optim
 import torch.nn.functional as F
 import torchvision.transforms as transforms
 
-from utils import *
-
-from wells_fargo_dataset import WellsFargoDataset
-from models.dense_no_xc_model import DenseNoXC
-from models.dense_ohe_model import DenseOHE
-from models.dense_embed_model import DenseEmbed
-from models.conv1d_embed_model import Conv1DEmbed
 
 TRAIN_DATA = '../data/raw/0173eeb640e7-Challenge+Data+Set+-+Campus+Analytics+2020.xlsx'
 
@@ -31,6 +30,10 @@ torch.cuda.manual_seed_all(789)
 
 
 class TrainModel:
+    '''
+    Module for training a neural network.
+    '''
+
     def __init__(self, **args):
         # Save arguments for reinitializing model during k-fold validation
         self.args = args
@@ -129,11 +132,17 @@ class TrainModel:
         return optim.lr_scheduler.StepLR(self.optimizer, step_size=step_size, gamma=gamma)
 
     def _reset_train_session(self):
+        '''
+        Reset model, optimizer, and scheduler parameters for a fresh training session.
+        '''
         self.model = self._init_model()
         self.optimizer = self._init_optim()
         self.scheduler = self._init_scheduler()
 
     def _average_cls_reports(self, cls_reports):
+        '''
+        Generate an average of the k-Fold validation results
+        '''
         if not cls_reports:
             return None
 
@@ -159,6 +168,10 @@ class TrainModel:
         return result
 
     def train(self):
+        '''
+        Train a neural network.
+        '''
+
         print('k-Fold Cross Validation start.')
         # Collect classification reports of each k-Fold
         cls_reports = []

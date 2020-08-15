@@ -31,6 +31,12 @@ torch.cuda.manual_seed_all(789)
 
 
 class TestModel:
+    '''
+    This module can only be used if there is a trained model in the same experiment
+    directory.
+    This module predicts and generates data on the test set.
+    '''
+
     def __init__(self, exp_no, cpu, device):
         # Others
         self.exp_no = exp_no
@@ -65,7 +71,6 @@ class TestModel:
             return torch.device(f'cuda:{device}')
 
     def _init_model(self):
-
         model_type = self.args['model']
         device = self.args['device']
         bn = self.args['bn']
@@ -100,6 +105,9 @@ class TestModel:
         self.model.load_state_dict(checkpoint['model_state_dict'])
 
     def test(self):
+
+        print(
+            f'Generating output on test set using experiment number: {self.exp_no}')
         y_pred = []
         scenario_num = []
 
@@ -109,7 +117,7 @@ class TestModel:
             for _, (feat_vec, xc, scenario) in enumerate(tqdm(self.test_loader)):
                 feat_vec, xc = feat_vec.to(self.device), xc.to(self.device)
 
-                # Make predictionssssss
+                # Make predictions
                 outputs = self.model(feat_vec, xc)
                 outputs = torch.sigmoid(outputs)
                 outputs = torch.round(outputs)

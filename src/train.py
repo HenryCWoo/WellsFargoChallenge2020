@@ -70,7 +70,6 @@ parser.add_argument('--no_save', action='store_true',
 parser.add_argument('--note', type=str,
                     help='Leave note to describe experiment. (Optional)')
 
-global args
 args = parser.parse_args()
 args = vars(args)
 
@@ -79,7 +78,7 @@ def save_args():
     ''' Save arguments into yaml file '''
     global args
     with open(os.path.join(EXPERIMENTS_DIR, str(args['exp_no']), 'info.yml'), 'w') as f:
-        yaml.dump(vars(args), f, default_flow_style=False)
+        yaml.dump(args, f, default_flow_style=False)
 
 
 def load_args():
@@ -104,12 +103,13 @@ def increm_experiment_dir():
 
 def init_exp_dir():
     ''' Create or load an experiment '''
-    # Create new experiment if exp number was not specified
-    # Create root save model directory if it doesn't exist
     global args
+
+    # Create root save model directory if it doesn't exist
     if not os.path.exists(EXPERIMENTS_DIR):
         os.mkdir(EXPERIMENTS_DIR)
 
+    # Create new experiment if exp number was not specified
     if args['exp_no'] == -1:
         increm_experiment_dir()
 

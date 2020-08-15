@@ -8,20 +8,22 @@ from wells_fargo_dataset import XC_COUNT
 class DenseOHE(nn.Module):
     ''' This model encodes the 'XC' column as a one hot encoding '''
 
-    def __init__(self, device, bn=True, dropout=True, dropout_rate=0.5):
+    def __init__(self, device, bn=True, dropout=True, dropout_rate=0.5, hidden_layers=2, hidden_units=64):
         super(DenseOHE, self).__init__()
         self.device = device
         self.dropout = dropout
         self.dropout_rate = dropout_rate
         self.bn = bn
 
+        self.hidden_layers_no = hidden_layers
+        self.hidden_units_no = hidden_units
+
         self.layer_xc = self._hidden_layer(5, 16)
         self.layer_x = self._hidden_layer(30, 64)
-        self.layer_1 = self._hidden_layer(64 + 16, 64)
-        self.layer_2 = self._hidden_layer(64, 64)
-        self.layer_3 = self._hidden_layer(64, 64)
+        self.layer_1 = self._hidden_layer(64 + 16, hidden_units)
+        self.hidden_layers = self._hidden_layers()
 
-        self.output = nn.Linear(64, 1)
+        self.output = nn.Linear(hidden_units, 1)
 
     def _hidden_layer(self, input, output):
         modules = []
@@ -37,6 +39,13 @@ class DenseOHE(nn.Module):
 
         return nn.Sequential(*modules)
 
+    def _hidden_layers(self):
+        modules = []
+        for _ in range(self.hidden_layers_no):
+            modules.append(self._hidden_layer(
+                self.hidden_units_no, self.hidden_units_no))
+        return nn.Sequential(*modules)
+
     def forward(self, x, xc):
         xc = xc.squeeze()
         xc = xc.long()  # F.one_hot requires long type
@@ -48,8 +57,7 @@ class DenseOHE(nn.Module):
 
         x = torch.cat((x, xc), dim=1)
         x = self.layer_1(x)
-        x = self.layer_2(x)
-        x = self.layer_3(x)
+        x = self.hidden_layers(x)
         x = self.output(x)
 
         return x
