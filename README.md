@@ -3,6 +3,7 @@ This is my submission to this challenge: [MindSumo Wells Fargo Campus Analytics 
 
 This project contains models that can be trained via the command line interface.
 There are a total of four modifiable neural network architectures and a bare minimum usage of XGBoost.  
+
 All experiments use the same seed which makes them reproducible.
 
 ## Directories
@@ -48,7 +49,13 @@ python train.py --model=conv1d_embed --lr=1e-4 --epochs=128 --conv_blocks=1 --fi
 ```
 After the experiments finishes, search for the experiment in the `/experiments` folder and see `info.yml` to see results and the hyperparameters used from above.
 
-To generate results on the evaluation set provided from the contest, usethe following command:
+To generate results on the evaluation set provided from the contest, use the following command:
 ```bash
 python train.py --test --exp_no=<EXPERIMENT NUMBER FOUND IN /experiments>
 ```
+This will create a file called `output.csv` inside the experiment number directory. The file will contain the dataset_id and prediction_score columns as specified in the contest description.
+
+## Contributing
+As this is a single-time contest entry, contributions are not accepted. 
+
+All work was done solely by me, Henry C Woo.
