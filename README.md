@@ -35,10 +35,10 @@ conda create --name <env> --file requirements.txt
 
 ## Usage
 Before all else, first create the directories `/data/raw` in the root directory.  
-Then place both the following datasets/files:
+
+Then place both the following dataset files inside `/data/raw`:
 - 0173eeb640e7-Challenge+Data+Set+-+Campus+Analytics+2020.xlsx
-- d59675225279-Evaluation+Data+Set+-+Campus+Analytics+2020.xlsx  
-inside `/data/raw`.
+- d59675225279-Evaluation+Data+Set+-+Campus+Analytics+2020.xlsx
 
 The training sessions, hyperparameters, and modifications to the architectures can all be done from the command line interface.  
 All commands below assume the user's current working directory is `/src`.
