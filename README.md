@@ -62,5 +62,3 @@ This will create a file called `output.csv` inside the experiment number directo
 
 ## Contributing
 As this is a single-time contest entry, contributions are not accepted. 
-
-All work was done solely by me, Henry C Woo.
